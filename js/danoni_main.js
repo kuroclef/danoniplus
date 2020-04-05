@@ -1208,12 +1208,30 @@ function reloadDos(_scoreId) {
 }
 
 /**
+ * クエリ文字列のプリセット
+ * @param {number} _scrollNum 
+ */
+function setPreSetting(_settingName) {
+	const tmpId = setVal(getQueryParamVal(`${_settingName}Id`), 0, C_TYP_NUMBER);
+	eval(`
+	if (g_${_settingName}Num < g_${_settingName}s.length) {
+		g_${_settingName}Num = tmpId;
+		g_stateObj.${_settingName} = g_${_settingName}s[g_${_settingName}Num];
+	}
+	`);
+}
+
+/**
  * 初回読込後に画像プリロードを設定する処理
  */
 function initAfterDosLoaded() {
 
 	// クエリで譜面番号が指定されていればセット
 	g_stateObj.scoreId = setVal(getQueryParamVal(`scoreId`), 0, C_TYP_NUMBER);
+
+	setPreSetting(`motion`);
+	setPreSetting(`scroll`);
+	setPreSetting(`appearance`);
 
 	// 譜面ヘッダー、特殊キー情報の読込
 	g_headerObj = headerConvert(g_rootObj);

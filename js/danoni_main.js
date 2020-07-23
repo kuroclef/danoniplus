@@ -659,7 +659,12 @@ function createCssButton(_obj, _func) {
 	div.ontouchstart = ``;
 
 	// ボタンを押したときの動作
-	const lsnrkey = g_handler.addListener(div, `click`, _ => _func());
+	let lsnrkey;
+	if (window.ontouchstart !== null) {
+		lsnrkey = g_handler.addListener(div, `click`, _ => _func());
+	} else {
+		lsnrkey = g_handler.addListener(div, `touchstart`, _ => _func());
+	}
 
 	// イベントリスナー用のキーをセット
 	div.setAttribute(`lsnrkey`, lsnrkey);
@@ -7497,6 +7502,8 @@ function MainInit() {
 		createSprite(`maskSprite`, `maskSprite${j}`, 0, 0, g_sWidth, g_sHeight);
 	}
 
+	const touchSprite = createSprite(`divRoot`, `touchSprite`, 0, 0, g_sWidth, g_sHeight);
+
 	// 背景・マスクモーション(0フレーム指定)
 	if (g_scoreObj.frameNum === 0) {
 		g_animationData.forEach(sprite => {
@@ -7539,6 +7546,27 @@ function MainInit() {
 			stepRoot.appendChild(stepShadow);
 			stepShadow.style.opacity = 0.7;
 		}
+
+		// ステップゾーンルート
+		const touchStep = createCssButton({
+			id: `touchStep${j}`,
+			name: ``,
+			x: g_workObj.stepX[j],
+			y: C_STEP_Y + g_posObj.reverseStepY * g_workObj.dividePos[j],
+			width: C_ARW_WIDTH,
+			height: C_ARW_WIDTH,
+			fontsize: C_LBL_BTNSIZE,
+			align: C_ALIGN_CENTER,
+			class: g_cssObj.button_Default,
+		}, _ => {
+			console.log(j);
+			if (!g_judgObj.lockFlgs[j]) {
+				g_judgObj.lockFlgs[j] = true;
+				judgeArrow(j);
+				g_judgObj.lockFlgs[j] = false;
+			}
+		});
+		touchSprite.appendChild(touchStep);
 
 		// ステップゾーン本体
 		const step = createColorObject(`step${j}`, ``,
